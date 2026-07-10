@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Server
+metadata:
+    name: runner4
+    comment: Github Actions Runner-4
+spec:
+    cpu: 4
+    memory: 12288
+    mmImage: ubuntu24.04
+    auth:
+        url: https://github.com/takara9.keys
+        users: 
+        - root
+        - ubuntu
+
+    networkInterface:
+      - networkname: host-bridge
+      - networkname: ovs-network
+        portgroup: vlan-1002
+        address: 192.168.1.214
+        netmasklen: 24
+        routes:
+          - to: default
+            via: 192.168.1.1
+        nameservers:
+          addresses:
+              - 192.168.1.9
+          search:
+              - labo.local
+
+      - networkname: ovs-network
+        portgroup: vlan-1001
+        address: 172.16.0.214
+        routes:
+          - to: default
+            via: 172.16.0.1
+        netmasklen: 24
+
+    storage:
+        - metadata:
+            name: /var/marmot
+            comment: Runnerのエリア
+          spec:
+            size: 100
+            type: qcow2
+
+        - metadata:
+            name: /dev/vg1
+            comment: Volume group 1
+          spec:
+            size: 100
+            type: qcow2
+
+        - metadata:
+            name: /dev/vg2
+            comment: Volume group 2
+          spec:
+            size: 100
+            type: qcow2
